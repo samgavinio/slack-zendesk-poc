@@ -4,3 +4,7 @@ import:
   version: ^3.2.4
 - package: github.com/nlopes/slack
   version: ^0.1.0
+- package: gopkg.in/go-playground/validator.v9
+  version: ^9.9.0
+- package: github.com/go-playground/universal-translator
+  version: ^0.16.0

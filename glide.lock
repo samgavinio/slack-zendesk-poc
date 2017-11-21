@@ -1,6 +1,12 @@
-hash: 42730a1cc3c63b76c73f33465afcd61b9557d6e497898eb87800c5a1d71e92c4
-updated: 2017-11-21T10:52:28.372744727+08:00
+hash: 756e4b092c874a8522de44b66f2b3f1931411388866ddc0de9d93a4e5db73d46
+updated: 2017-11-21T16:56:40.019743063+08:00
 imports:
+- name: github.com/go-playground/locales
+  version: e4cbcb5d0652150d40ad0646651076b6bd2be4f6
+  subpackages:
+  - currency
+- name: github.com/go-playground/universal-translator
+  version: b32fa301c9fe55953584134cb6853a13c87ec0a1
 - name: github.com/labstack/echo
   version: b28538b2e3f5446fe6e0e47ee34cd74b662ca2ab
 - name: github.com/labstack/gommon
@@ -27,4 +33,6 @@ imports:
   version: 328643532ee3c60c099171d4ce2cad0ca0354ca9
   subpackages:
   - unix
+- name: gopkg.in/go-playground/validator.v9
+  version: 61caf9d3038e1af346dbf5c2e16f6678e1548364
 testImports: []
