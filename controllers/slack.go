@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/labstack/echo"
+	"github.com/benmanns/goworker"
 	"github.com/zendesk/slack-poc/config"
 )
 
@@ -16,6 +17,7 @@ type (
 	}
 	event struct {
 		Type string
+		Text string
 	}
 	verificationResponse struct {
 		Challenge string `json:"challenge"`
@@ -53,6 +55,13 @@ func (handler *Controller) handleUrlVerification(request *payload, c echo.Contex
 
 func (handler *Controller) handleEventCallback(request *payload, c echo.Context) (err error) {
 	if request.Event.Type == "message" {
+		goworker.Enqueue(&goworker.Job{
+			Queue: "zendesk",
+			Payload: goworker.Payload{
+				Class: "ProcessSlackMessage",
+				Args: []interface{}{request.Event},
+			},
+		})
 	}
 
 	return c.JSON(http.StatusOK, nil)
