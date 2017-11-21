@@ -1,0 +1,6 @@
+package: github.com/zendesk/slack-poc
+import:
+- package: github.com/labstack/echo
+  version: ^3.2.4
+- package: github.com/nlopes/slack
+  version: ^0.1.0
