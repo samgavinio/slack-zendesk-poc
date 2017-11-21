@@ -11,9 +11,10 @@ func main() {
 	handler := &controllers.Controller{}
 
 	e.POST("/slack/events", handler.SlackEvent)
+	e.GET("/zendesk/manifest", handler.Manifest)
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+		return c.String(http.StatusOK, "Welcome to the Zendesk-Slack POC")
 	})
 	e.Logger.Fatal(e.Start(":1323"))
 }
