@@ -9,6 +9,11 @@ import (
 type Config struct {
 	SlackAppClientId string `json:"slack_app_client_id"`
 	SlackAppClientSecret string `json:"slack_app_client_secret"`
+	DatabaseHost string `json:"database_host"`
+	DatabasePort int `json:"database_port"`
+	DatabaseUsername string `json:"database_username"`
+	DatabasePassword string `json:"database_password"`
+	DatabaseName string `json:"database_name"`
 }
 
 func GetConfig() (config Config) {

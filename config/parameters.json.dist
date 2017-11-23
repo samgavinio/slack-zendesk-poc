@@ -1,4 +1,9 @@
 {
     "slack_app_client_id": "see-app-credentials-in-slack",
     "slack_app_client_secret": "see-app-credentials-in-slack",
+    "database_host": "localhost",
+    "database_port": 3306,
+    "database_username": "root",
+    "database_password": null,
+    "database_name": "slack_zendesk"
 }

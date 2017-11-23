@@ -7,6 +7,7 @@ import (
 type (
 	Controller struct {
 		// Quick and dirty way to access the echo methods in handlers
+		// todo: figure out how to do this better
 		Echo *echo.Echo
 	}
 
