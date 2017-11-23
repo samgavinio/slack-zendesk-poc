@@ -3,11 +3,15 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/nlopes/slack"
 	"github.com/labstack/echo"
+
 	"github.com/benmanns/goworker"
 	"github.com/zendesk/slack-poc/config"
+	"github.com/zendesk/slack-poc/operation"
+	"github.com/zendesk/slack-poc/models"
 )
 
 type (
@@ -113,8 +117,17 @@ func (handler *Controller) SaveOAuth (c echo.Context) (err error) {
 	
 	cfg := config.GetConfig()
 	returnUrl := c.Scheme() + "://" + c.Request().Host + handler.Echo.Reverse("slack.oauth.save")
-	token, _, err := slack.GetOAuthToken(cfg.SlackAppClientId, cfg.SlackAppClientSecret, request.Code,  returnUrl, false)
+	response, err := slack.GetOAuthResponse(cfg.SlackAppClientId, cfg.SlackAppClientSecret, request.Code,  returnUrl, false)
 	if err != nil {
+		return err
+	}
+
+	fmt.Println(response)
+	integration := &models.Integration{
+		SlackToken: response.AccessToken,
+		SlackWorkspace: response.TeamID,
+	}
+	if err = operations.DB.Create(&integration).Error; err != nil {
 		return err
 	}
 
