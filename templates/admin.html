@@ -8,13 +8,15 @@
   </head>
   <body>
     <div class="container">
-      <form method="post" action="/slack/oauth/initiate" target="_blank">
+      <form id="setup-form" method="post" target="_blank" action="/slack/oauth/initiate">
         <div class="field">
           <label for="workspace" class="label">Slack Workspace</label>
           <div class="control">
             <input type="text" class="input" placeholder="yourworkspace.slack.com" name="workspace"/>
             <input type="hidden" name="subdomain" value="{{.Subdomain}}"/>
             <input type="hidden" name="return_url" value="{{.ReturnUrl}}"/>
+            <input type="hidden" name="token" value="{{.ZendeskAccessToken}}"/>
+            <input type="hidden" name="push_client_id" value="{{.InstancePushId}}"/>
           </div>
         </div>
         <div class="field">
@@ -24,6 +26,43 @@
         </div>
       </form>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+         $("#setup-form").submit(function(event) {
+          var $form = $(this);
+          var intervalId = setInterval(function(){
+            $.ajax({
+              type: 'POST',
+              url: '/slack/oauth/is-configured',
+              data: $form.serialize(),
+              success: function(data) {
+                clearInterval(intervalId);
+                var workspace = $form.find('[name="workspace"]').first().val();
+                var metadata = JSON.stringify({
+                  subdomain: $form.find('[name="subdomain"]').first().val()
+                });
+
+                var $zdForm = $('<form>', {
+                    'action': $form.find('[name="return_url"]').first().val(),
+                    'method': 'POST'
+                }).append($('<input>', {
+                    'name': 'name',
+                    'value': workspace,
+                    'type': 'hidden'
+                })).append($('<input>', {
+                    'name': 'metadata',
+                    'value': metadata,
+                    'type': 'hidden'
+                }));
+                $(document.body).append($zdForm);
+                $zdForm.submit();
+              }
+            });
+          }, 2500);
+        });
+      });
+    </script>
   </body>
 </html>
 {{end}}

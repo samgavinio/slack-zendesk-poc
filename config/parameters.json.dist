@@ -1,4 +1,5 @@
 {
+    "slack_verification_token": "see-app-credentials-in-slack",
     "slack_app_client_id": "see-app-credentials-in-slack",
     "slack_app_client_secret": "see-app-credentials-in-slack",
     "database_host": "localhost",

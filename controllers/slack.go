@@ -3,14 +3,13 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/nlopes/slack"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
-
 	"github.com/benmanns/goworker"
+
 	"github.com/zendesk/slack-poc/config"
 	"github.com/zendesk/slack-poc/operation"
 	"github.com/zendesk/slack-poc/models"
@@ -21,11 +20,14 @@ type (
 		Type string `json:"type" validate:"required"`
 		Token string `json:"token" validate:"required"`
 		Challenge string `json:"challenge"`
-		Event event
+		TeamId string `json:"team_id"`
+		Event event `json:"event"`
 	}
 	event struct {
-		Type string
-		Text string
+		Type string `json:"type"`
+		Text string `json:"text"`
+		EventTs string `json:"event_ts"`
+		User string `json:"user"`
 	}
 	verificationResponse struct {
 		Challenge string `json:"challenge"`
@@ -38,6 +40,8 @@ type (
 		Subdomain string `form:"subdomain" validate:"required"`
 		ReturnUrl string `form:"return_url" validate:"required"`
 		Workspace string `form:"workspace" validate:"required"`
+		ChannelsToken string `form:"token" validate:"required"`
+		ChannelsPushClientId string `form:"push_client_id" validate:"required"`
 	}
 )
 
@@ -51,9 +55,10 @@ func (handler *Controller) SlackEvent(c echo.Context) (err error) {
 	if err = validate.Struct(request); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error());
 	}
-	// cfg.SlackVerificationToken != request.Token
-	if false {
-		return echo.NewHTTPError(http.StatusBadRequest, "Verification token does not match.");
+
+	cfg := config.GetConfig()
+	if cfg.SlackVerificationToken != request.Token {
+		return echo.NewHTTPError(http.StatusBadRequest, "Verification token is invalid.");
 	}
 
 	switch request.Type {
@@ -76,7 +81,7 @@ func (handler *Controller) handleEventCallback(request *payload, c echo.Context)
 			Queue: "zendesk",
 			Payload: goworker.Payload{
 				Class: "ProcessSlackMessage",
-				Args: []interface{}{request.Event},
+				Args: []interface{}{request},
 			},
 		})
 	}
@@ -106,7 +111,9 @@ func (handler *Controller) InitiateOAuth (c echo.Context) (err error) {
 
 	sess, _ := session.Get("session", c)
 	sess.Values["zendesk_subdomain"] = request.Subdomain
-	sess.Values["channels_return_url"] = request.ReturnUrl
+	sess.Values["slack_workspace"] = request.Workspace
+	sess.Values["channels_token"] = request.ChannelsToken
+	sess.Values["channels_push_client_id"] = request.ChannelsPushClientId
 	sess.Save(c.Request(), c.Response())
 
 	return c.Redirect(http.StatusTemporaryRedirect, redirectTo)
@@ -134,19 +141,38 @@ func (handler *Controller) SaveOAuth (c echo.Context) (err error) {
 	sess, _ := session.Get("session", c)
 	integration := &models.Integration{
 		SlackToken: response.AccessToken,
-		SlackWorkspace: response.TeamID,
+		SlackTeamId: response.TeamID,
+		SlackWorkspace: sess.Values["slack_workspace"].(string),
 		ZendeskSubdomain: sess.Values["zendesk_subdomain"].(string),
+		ZendeskToken: sess.Values["channels_token"].(string),
+		ZendeskInstancePushId: sess.Values["channels_push_client_id"].(string),
 	}
-	if err = operations.DB.Create(&integration).Error; err != nil {
+	if err = operation.DB.Create(&integration).Error; err != nil {
 		return err
 	}
 
-	return_url := sess.Values["channels_return_url"].(string)
-	resp, err := http.PostForm(return_url, url.Values{"name": {response.TeamID}})
-	if err != nil {
+	return c.Render(http.StatusOK, "success", nil)
+}
+
+func (handler *Controller) IsConfigured (c echo.Context) (err error) {
+	request := new(initiateAuth)
+	if err = c.Bind(request); err != nil {
 		return err
 	}
-	fmt.Println(resp)
 
-	return c.Render(http.StatusOK, "admin", nil)
+	validate := validator.New()
+	if err = validate.Struct(request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error());
+	}
+
+	var integration models.Integration
+	query := operation.DB.Where(&models.Integration{
+		ZendeskSubdomain: request.Subdomain,
+		SlackWorkspace: request.Workspace,
+	})
+	if query.First(&integration).RecordNotFound() {
+		return c.String(http.StatusBadRequest, "Integration not found")
+	}
+
+	return c.JSON(http.StatusOK, "Integration found.")
 }

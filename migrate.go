@@ -16,8 +16,11 @@ var versions = []*gormigrate.Migration{
 			type Integration struct {
 				models.Model
 				SlackToken string `gorm:"primary_key;size:255;not null"`
+				SlackTeamId string `gorm:"size:255;not null"`
 				SlackWorkspace string `gorm:"size:255;not null"`
 				ZendeskSubdomain string `gorm:"size:255;not null"`
+				ZendeskInstancePushId string `gorm:"size:255;not null"`
+				ZendeskToken string `gorm:"size:255;not null"`
 			}
 
 			if err := tx.AutoMigrate(
@@ -42,5 +45,5 @@ func main() {
 	}
 
 	cfg := config.GetConfig()
-	operations.Migrate(cfg, versions, defaultOptions)
+	operation.Migrate(cfg, versions, defaultOptions)
 }

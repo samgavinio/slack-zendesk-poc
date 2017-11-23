@@ -1,7 +1,7 @@
 {
   "channel_integrations": {
     "zendesk_slack_poc": {
-      "manifest_url": "https://5b63f540.ngrok.io/zendesk/manifest.json"
+      "manifest_url": "https://d7766aa7.ngrok.io/zendesk/manifest.json"
     }
   }
 }

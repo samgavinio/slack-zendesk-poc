@@ -30,6 +30,7 @@ func main() {
 	e.POST("/slack/events", handler.SlackEvent).Name = "slack.events"
 	e.POST("/slack/oauth/initiate", handler.InitiateOAuth).Name = "slack.oauth.initiate"
 	e.GET("/slack/oauth/save", handler.SaveOAuth).Name = "slack.oauth.save"
+	e.POST("/slack/oauth/is-configured", handler.IsConfigured).Name = "slack.oauth.is-configured"
 
 	e.GET("/zendesk/manifest.json", handler.Manifest).Name = "zendesk.manifest"
 	e.POST("/zendesk/admin-ui", handler.SetupForm).Name = "zendesk.setup"
