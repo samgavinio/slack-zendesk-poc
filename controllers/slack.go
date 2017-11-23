@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/nlopes/slack"
@@ -35,6 +36,7 @@ type (
 	}
 	initiateAuth struct {
 		Subdomain string `form:"subdomain" validate:"required"`
+		ReturnUrl string `form:"return_url" validate:"required"`
 		Workspace string `form:"workspace" validate:"required"`
 	}
 )
@@ -104,6 +106,7 @@ func (handler *Controller) InitiateOAuth (c echo.Context) (err error) {
 
 	sess, _ := session.Get("session", c)
 	sess.Values["zendesk_subdomain"] = request.Subdomain
+	sess.Values["channels_return_url"] = request.ReturnUrl
 	sess.Save(c.Request(), c.Response())
 
 	return c.Redirect(http.StatusTemporaryRedirect, redirectTo)
@@ -137,6 +140,13 @@ func (handler *Controller) SaveOAuth (c echo.Context) (err error) {
 	if err = operations.DB.Create(&integration).Error; err != nil {
 		return err
 	}
+
+	return_url := sess.Values["channels_return_url"].(string)
+	resp, err := http.PostForm(return_url, url.Values{"name": {response.TeamID}})
+	if err != nil {
+		return err
+	}
+	fmt.Println(resp)
 
 	return c.Render(http.StatusOK, "admin", nil)
 }
