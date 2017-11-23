@@ -17,7 +17,7 @@ var versions = []*gormigrate.Migration{
 				models.Model
 				SlackToken string `gorm:"primary_key;size:255;not null"`
 				SlackWorkspace string `gorm:"size:255;not null"`
-				ZendeskSubdomain int32 `gorm:"not null"`
+				ZendeskSubdomain string `gorm:"size:255;not null"`
 			}
 
 			if err := tx.AutoMigrate(

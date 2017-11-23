@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/labstack/echo"
@@ -57,7 +56,5 @@ func (handler *Controller) SetupForm (c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error());
 	}
 
-	fmt.Println(request)
-	
-	return c.Render(http.StatusOK, "admin", nil)
+	return c.Render(http.StatusOK, "admin", request)
 }

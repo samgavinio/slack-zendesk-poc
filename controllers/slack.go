@@ -7,6 +7,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/nlopes/slack"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo-contrib/session"
 
 	"github.com/benmanns/goworker"
 	"github.com/zendesk/slack-poc/config"
@@ -33,6 +34,7 @@ type (
 		State string `query:"state" validate:"required"`
 	}
 	initiateAuth struct {
+		Subdomain string `form:"subdomain" validate:"required"`
 		Workspace string `form:"workspace" validate:"required"`
 	}
 )
@@ -100,6 +102,10 @@ func (handler *Controller) InitiateOAuth (c echo.Context) (err error) {
 		returnUrl,
 	)
 
+	sess, _ := session.Get("session", c)
+	sess.Values["zendesk_subdomain"] = request.Subdomain
+	sess.Save(c.Request(), c.Response())
+
 	return c.Redirect(http.StatusTemporaryRedirect, redirectTo)
 }
 
@@ -122,10 +128,11 @@ func (handler *Controller) SaveOAuth (c echo.Context) (err error) {
 		return err
 	}
 
-	fmt.Println(response)
+	sess, _ := session.Get("session", c)
 	integration := &models.Integration{
 		SlackToken: response.AccessToken,
 		SlackWorkspace: response.TeamID,
+		ZendeskSubdomain: sess.Values["zendesk_subdomain"].(string),
 	}
 	if err = operations.DB.Create(&integration).Error; err != nil {
 		return err

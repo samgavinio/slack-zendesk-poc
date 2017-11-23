@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"github.com/labstack/echo"
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/zendesk/slack-poc/controllers"
 )
 
@@ -19,6 +21,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func main() {
 	e := echo.New()
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 	e.Renderer = &Template{
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
