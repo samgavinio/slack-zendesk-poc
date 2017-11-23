@@ -1,0 +1,13 @@
+{
+  "name": "Zendesk-Slack POC",
+  "author": {
+    "name": "Sam Gavinio",
+    "email": "samgavinio@gmail.com",
+    "url": ""
+  },
+  "defaultLocale": "en",
+  "private": false,
+  "version": "0.0",
+  "singleInstall": true,
+  "requirementsOnly": true
+}

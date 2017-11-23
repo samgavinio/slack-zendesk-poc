@@ -1,7 +1,14 @@
 package controllers
 
+import (
+	"github.com/labstack/echo"
+)
+
 type (
-	Controller struct {}
+	Controller struct {
+		// Quick and dirty way to access the echo methods in handlers
+		Echo *echo.Echo
+	}
 
 	JsonResponse struct {
 		Status string `json:"status"`

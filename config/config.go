@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	SlackVerificationToken string `json:"slack_verification_token"`
+	SlackAppClientId string `json:"slack_app_client_id"`
+	SlackAppClientSecret string `json:"slack_app_client_secret"`
 }
 
 func GetConfig() (config Config) {

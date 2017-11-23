@@ -1,0 +1,8 @@
+{
+  "app": {
+      "description": "POC for Zendesk and Slack Integration using Channels Framework",
+      "name": "Zendesk-Slack POC",
+      "installation_instructions": "Do this and do that",
+      "long_description" : "See description."
+  }
+}
