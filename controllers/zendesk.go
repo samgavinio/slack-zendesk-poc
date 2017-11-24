@@ -49,7 +49,7 @@ type (
 	}
 
 	channelbackResponse struct {
-		ExternalId string `json:"message"`
+		ExternalId string `json:"external_id"`
 		AllowChannelback bool `json:"allow_channel_back"`
 	}
 )
