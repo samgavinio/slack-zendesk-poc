@@ -30,37 +30,38 @@
     <script type="text/javascript">
       $(document).ready(function() {
          $("#setup-form").submit(function(event) {
-          var $form = $(this);
-          var intervalId = setInterval(function(){
-            $.ajax({
-              type: 'POST',
-              url: '/slack/oauth/is-configured',
-              data: $form.serialize(),
-              success: function(data) {
-                clearInterval(intervalId);
-                var workspace = $form.find('[name="workspace"]').first().val();
-                var metadata = JSON.stringify({
-                  subdomain: $form.find('[name="subdomain"]').first().val()
-                });
+           var $form = $(this);
+           // Poll the backend api, todo: replace with something more serious.
+           var intervalId = setInterval(function(){
+             $.ajax({
+               type: 'POST',
+               url: '/slack/oauth/is-configured',
+               data: $form.serialize(),
+               success: function(data) {
+                 clearInterval(intervalId);
+                 var workspace = $form.find('[name="workspace"]').first().val();
+                 var metadata = JSON.stringify({
+                   subdomain: $form.find('[name="subdomain"]').first().val()
+                 });
 
-                var $zdForm = $('<form>', {
-                    'action': $form.find('[name="return_url"]').first().val(),
-                    'method': 'POST'
-                }).append($('<input>', {
-                    'name': 'name',
-                    'value': workspace,
-                    'type': 'hidden'
-                })).append($('<input>', {
-                    'name': 'metadata',
-                    'value': metadata,
-                    'type': 'hidden'
-                }));
-                $(document.body).append($zdForm);
-                $zdForm.submit();
-              }
-            });
-          }, 2500);
-        });
+                 var $zdForm = $('<form>', {
+                   'action': $form.find('[name="return_url"]').first().val(),
+                   'method': 'POST'
+                 }).append($('<input>', {
+                   'name': 'name',
+                   'value': workspace,
+                   'type': 'hidden'
+                 })).append($('<input>', {
+                   'name': 'metadata',
+                   'value': metadata,
+                   'type': 'hidden'
+                 }));
+                 $(document.body).append($zdForm);
+                 $zdForm.submit();
+               }
+             });
+           }, 2500);
+         });
       });
     </script>
   </body>

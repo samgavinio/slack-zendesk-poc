@@ -9,48 +9,50 @@ A proof-of-concept Slack app built in Go to send messages to/from Slack. Built o
 This project uses [glide](https://github.com/Masterminds/glide#install) to manage dependencies.
 
 ```
-    glide install
+glide install
 ```
 
-##### Configure the app by editing `config/parameters.json`
+#### Configure the app by editing `config/parameters.json`
+
+```javascript
+{
+    "slack_verification_token": "see-app-credentialzes-in-slack",
+    "slack_app_client_id": "see-app-credentials-in-slack",
+    "slack_app_client_secret": "see-app-credentials-in-slack",
+    "database_host": "localhost",
+    "database_port": 3306,
+    "database_username": "root",
+    "database_password": null,
+    "database_name": "slack_zendesk"
+}
+```
+
+#### Migrate the database schema by executing.
+
+Create your database before hand and then execute
 
 ```
-    {
-        "slack_verification_token": "see-app-credentialzes-in-slack",
-        "slack_app_client_id": "see-app-credentials-in-slack",
-        "slack_app_client_secret": "see-app-credentials-in-slack",
-        "database_host": "localhost",
-        "database_port": 3306,
-        "database_username": "root",
-        "database_password": null,
-        "database_name": "slack_zendesk"
-    }
-```
-
-##### Migrate the database schema by executing.
-
-Create your database before hand.
-
-```
-    go run migrate.go
+go run migrate.go
 ```
 
 #### Start the app by executing:
 
-```golang
-    go run server.go --queues=zendesk
+```
+go run server.go --queues=zendesk
 ```
 
 #### Start the goworker by executing
 
-```golang
-    go run worker.go --queues=zendesk
+This requires that you have a redis service running in your machine. For this POC, this simply connects to a localhost instance with no authentication.
+
+```
+go run worker.go --queues=zendesk
 ```
 
 #### Package the zat app in the /zat directory
 
 ```
-    zat package
+zat package
 ```
 
 1. Upload the package as a private app

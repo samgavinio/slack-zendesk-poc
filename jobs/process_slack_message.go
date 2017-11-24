@@ -85,9 +85,9 @@ func ProcessSlackMessage(queue string, args ...interface{}) error {
 func pushChannels(body postBody, integration models.Integration) (response *http.Response, err error) {
 	endpoint := fmt.Sprintf("https://%s.zendesk.com/api/v2/any_channel/push.json", integration.ZendeskSubdomain)
 	jsonPayload, err := json.Marshal(body)
-    if err != nil {
+	if err != nil {
 		return nil, err
-    }
+	}
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer([]byte(jsonPayload)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")

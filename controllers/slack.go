@@ -64,19 +64,19 @@ func (handler *Controller) SlackEvent(c echo.Context) (err error) {
 
 	switch request.Type {
 	case "url_verification":
-		return handler.handleUrlVerification(request, c)
+		return handleUrlVerification(request, c)
 	case "event_callback":
-		return handler.handleEventCallback(request, c)
+		return handleEventCallback(request, c)
 	default:
 		return echo.NewHTTPError(http.StatusBadRequest, "Request type is not supported.");
 	}
 }
 
-func (handler *Controller) handleUrlVerification(request *payload, c echo.Context) (err error) {
+func handleUrlVerification(request *payload, c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, verificationResponse{Challenge: request.Challenge})
 }
 
-func (handler *Controller) handleEventCallback(request *payload, c echo.Context) (err error) {
+func handleEventCallback(request *payload, c echo.Context) (err error) {
 	if request.Event.Type == "message" {
 		goworker.Enqueue(&goworker.Job{
 			Queue: "zendesk",
