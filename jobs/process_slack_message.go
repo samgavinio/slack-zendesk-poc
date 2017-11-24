@@ -45,6 +45,7 @@ func ProcessSlackMessage(queue string, args ...interface{}) error {
 	message := event["text"].(string)
 	userId := event["user"].(string)
 	eventId := event["event_ts"].(string)
+	channel := event["channel"].(string)
 
 	var integration models.Integration
 	query := operation.DB.Where(&models.Integration{
@@ -60,7 +61,7 @@ func ProcessSlackMessage(queue string, args ...interface{}) error {
 	}
 	now := time.Now().UTC()
 	resource := externalResource{
-		ExternalId: eventId,
+		ExternalId: fmt.Sprintf("%s-%s", channel, eventId),
 		Message: message,
 		CreatedAt: now.Format("2006-01-02T15:04:05Z"),
 		Author: person,

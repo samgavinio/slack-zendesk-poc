@@ -34,6 +34,7 @@ func main() {
 
 	e.GET("/zendesk/manifest.json", handler.Manifest).Name = "zendesk.manifest"
 	e.POST("/zendesk/admin-ui", handler.SetupForm).Name = "zendesk.setup"
+	e.POST("/zendesk/channel-back", handler.ChannelBack).Name = "zendesk.channel-back"
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome to the Zendesk-Slack POC")

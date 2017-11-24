@@ -28,6 +28,7 @@ type (
 		Text string `json:"text"`
 		EventTs string `json:"event_ts"`
 		User string `json:"user"`
+		Channel string `json:"channel"`
 	}
 	verificationResponse struct {
 		Challenge string `json:"challenge"`
@@ -102,7 +103,7 @@ func (handler *Controller) InitiateOAuth (c echo.Context) (err error) {
 		
 	cfg := config.GetConfig()
 	returnUrl := c.Scheme() + "://" + c.Request().Host + handler.Echo.Reverse("slack.oauth.save")
-	redirectTo := fmt.Sprintf("https://slack.com/oauth/authorize?client_id=%s&client_secret=%s&scope=channels:read&team=%s&state=state&redirect_url=%s",
+	redirectTo := fmt.Sprintf("https://slack.com/oauth/authorize?client_id=%s&client_secret=%s&scope=channels:read chat:write:bot chat:write:user&team=%s&state=state&redirect_url=%s",
 		cfg.SlackAppClientId,
 		cfg.SlackAppClientSecret,
 		request.Workspace,
